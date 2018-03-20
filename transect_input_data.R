@@ -3,6 +3,7 @@
 # clear the enviroment
 rm(list=ls(all=TRUE))
 
+getwd()
 
 library(raster)
 library(lubridate)
