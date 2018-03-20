@@ -3,6 +3,7 @@
 # clear the enviroment
 rm(list=ls(all=TRUE))
 
+setwd('C:/Users/Andrew/Dropbox/antaya')
 getwd()
 
 library(raster)
