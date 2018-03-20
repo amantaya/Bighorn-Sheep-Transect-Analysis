@@ -11,10 +11,23 @@ library(lubridate)
 library(openxlsx)
 library(ggplot2)
 
+
+## path options
+davespc<-"D:/Dropbox/"
+andrewspc<-"C:/Users/Andrew/"
+
+#set current path
+mypath<-davespc
+
 # read in data from Excel
-sheepraw<-read.xlsx("C:/Users/Andrew/Dropbox/antaya/sheepdatabase.xlsx",
+sheepraw<-read.xlsx(paste0(mypath,"antaya/sheepdatabase.xlsx"),
                   sheet=1,
                   startRow=1)
+
+
+
+
+
 
 #NA's in location must be removed
 sheepraw<-sheepraw[!is.na(sheepraw$obslong),]
@@ -23,7 +36,7 @@ sheepraw<-sheepraw[!is.na(sheepraw$obslong),]
 sheeprawsp<-SpatialPointsDataFrame(cbind(sheepraw$obslong,sheepraw$obslat),data=sheepraw,proj4string= CRS("+init=epsg:4326"))
 
 #save as shapefile
-shapefile(sheeprawsp,"D:/Dropbox/antaya/spatialsheep.shp")
+shapefile(sheeprawsp,paste0(mypath,"antaya/spatialsheepraw.shp"),overwrite=T)
 
 
 #identify columns of interest
