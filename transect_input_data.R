@@ -8,9 +8,10 @@ getwd()
 library(raster)
 library(lubridate)
 library(openxlsx)
+library(ggplot2)
 
 # read in data from Excel
-sheepraw<-read.xlsx("D:/Dropbox/antaya/sheepdatabase.xlsx",
+sheepraw<-read.xlsx("C:/Users/Andrew/Dropbox/antaya/sheepdatabase.xlsx",
                   sheet=1,
                   startRow=1)
 
