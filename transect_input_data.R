@@ -118,19 +118,19 @@ for(i in 1: dim(gdistl)[1]){
 #append newsection names to data
 allsp$occsection<-newsect
 
-# report the number of unique segments in all data
-    # make a table of unique segments by transect
-    transectsections<-as.data.frame(aggregate(allsp$occsection,by=list(allsp$transectna),FUN=unique,simplify=T))
-    # make a dataframe to hold the name of each transect and the number of new sections on that transect
-    transects<-data.frame(name=as.vector(transectsections$Group.1),nsections=unlist(lapply(unique(transectsections$x),length)))
-    write.table(transects,"clipboard",sep="\t",row.names=F)
-    
+allsp$transectna[allsp$transectna=="southtillotson"]<-"tillotson"
+
+
 #shapefile(sheepsp,paste0(mypath,"antaya/spatialsheepnew.shp"),overwrite=T)
     
   
 # data prep  
 all<-allsp@data    
 
+
+# add altitiude to all points
+library(elevatr)
+allsp$demalt<-get_elev_point(allsp,src="epqs")
 
 
 # some have no transect name
@@ -238,4 +238,54 @@ alloccsp<-SpatialPointsDataFrame(cbind(allocc$obslong,allocc$obslat),allocc[,c(1
     
 
 writeClipboard(unique(all$transectna))    
+
+
+
+segmentcovs<-read.xlsx(paste0(mypath,"antaya/OccCov.xlsx"))
     
+
+# add elevatoin of the start of each segment
+#dem<-raster(paste0(mypath,"antaya/DEM/"))
+
+## this code extracts elevation for all points
+
+#allocc$altitude<-extract(dem,alloccsp)
+library(elevatr)
+elevs<-get_elev_point(alloccsp,src="epqs")
+
+allocc$demalt<-elevs$elevation
+
+
+
+allocc$transect<-all$transectna[match(allocc$sites,all$sites)]
+
+# find height above the lowest point on each transect
+for (i in 1:length(allocc$demalt)){
+    allocc$height[i]<-allocc$demalt[i]-min(allocc$demalt[allocc$transect==allocc$transect[i]])
+}
+
+## add max height on transect
+for (i in 1:length(allocc$demalt)){
+    allocc$maxheight[i]<-max(allsp$demalt$elevation[allsp$transectna==allocc$transect[i]],na.rm=T)-min(allsp$demalt$elevation[all2$transectna==allocc$transect[i]],na.rm=T)
+}
+
+## add size of features (copy size from thesis into clipboard)
+#size<-data.frame(size=readClipboard(),transect=unique(allocc$transect))
+#allocc$size<-size$size[match(allocc$transect,size$transect)]
+
+
+
+
+# report the number of unique segments in all data
+# make a table of unique segments by transect
+transectsections<-as.data.frame(aggregate(all$occsection,by=list(all$transectna),FUN=unique,simplify=T))
+# make a dataframe to hold the name of each transect and the number of new sections on that transect
+transects<-data.frame(name=as.vector(transectsections$Group.1),nsections=unlist(lapply(unique(transectsections$x),length)))
+write.table(transects,"clipboard",sep="\t",row.names=F)
+
+
+#shapefile(alloccsp,paste0(mypath,"antaya/Sheep_Spatial/alloccshp.shp"),overwrite=T)
+#write.csv(allocc,paste0(mypath,"antaya/allocc.csv")) 
+
+
+
